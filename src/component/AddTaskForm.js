@@ -5,6 +5,12 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import axios from 'axios';
 
+// Helper to get auth headers
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
 const schema = yup.object().shape({
   Name: yup.string().required('Task name is required'),
   active: yup.boolean().required('Active status is required'),
@@ -19,10 +25,9 @@ const TaskForm = () => {
 
   const mutation = useMutation({
     mutationFn: (task) =>
-      axios.post('https://localhost:7116/api/Task', task),
+      axios.post('https://daymissionsapi-production.up.railway.app/api/Task', task, { headers: getAuthHeaders() }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ActiveTasks'] });
-     
     },
     onError: () => {
       alert('Failed to add task. Please try again.');

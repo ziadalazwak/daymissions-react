@@ -2,6 +2,12 @@ import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 
+// Helper to get auth headers
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
 const DailyTasks = () => {
   const [date, setDate] = useState(() => {
     const today = new Date();
@@ -10,7 +16,7 @@ const DailyTasks = () => {
   const queryClient = useQueryClient();
   const { data, isLoading, error } = useQuery({
     queryKey: ['tracks', date],
-    queryFn: () => axios.get(`https://localhost:7116/api/DailyTrack?date=${date}`).then(res => res.data),
+    queryFn: () => axios.get(`https://daymissionsapi-production.up.railway.app/api/DailyTrack?date=${date}`, { headers: getAuthHeaders() }).then(res => res.data),
     enabled: !!date,
   });
 
@@ -23,7 +29,7 @@ const DailyTasks = () => {
   }
 
   const handleCheckboxClick = (taskId) => {
-    axios.patch(`https://localhost:7116/api/DailyTrack/${taskId}`)
+    axios.patch(`https://daymissionsapi-production.up.railway.app/api/DailyTrack/${taskId}`, {}, { headers: getAuthHeaders() })
       .then(() => {
         queryClient.invalidateQueries({ queryKey: ['tracks', date] });
       })
@@ -34,7 +40,7 @@ const DailyTasks = () => {
 
   const deleteDailyTask = (id) => {
     if (window.confirm('Are you sure you want to delete this daily task? This action cannot be undone.')) {
-      axios.delete(`https://localhost:7116/api/DailyTrack/${id}`)
+      axios.delete(`https://daymissionsapi-production.up.railway.app/api/DailyTrack/${id}`, { headers: getAuthHeaders() })
         .then(() => {
           console.log('Daily task deleted successfully');
           queryClient.invalidateQueries({ queryKey: ['tracks', date] });
