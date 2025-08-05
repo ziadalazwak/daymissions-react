@@ -5,10 +5,9 @@ import { QueryClientProvider,QueryClient } from '@tanstack/react-query';
 const queryClient = new QueryClient();
 function App() {
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen">
       <QueryClientProvider client={queryClient}>
-     <NavBar/>
-   
+        <NavBar/>
       </QueryClientProvider>
     </div>
   );
